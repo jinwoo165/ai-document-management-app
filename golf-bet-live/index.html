@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b5f3b" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="오늘 누가 쏴?" />
+  <title>오늘 누가 쏴? GOLF</title>
+  <link rel="stylesheet" href="../golf-bet-app/styles.css?v=13" />
+  <link rel="stylesheet" href="../golf-bet-app/readable.css?v=13" />
+</head>
+<body>
+<div id="app" class="app">
+  <header class="topbar">
+    <div class="toprow">
+      <div class="brand"><div class="logo">⛳</div><div>오늘 누가 쏴?</div></div>
+    </div>
+    <div id="roomLine" class="roomline hidden"><span id="myIdentity">-</span><span>ROOM <b id="roomCodeTop" class="roomcode">------</b></span></div>
+  </header>
+  <main id="main"></main>
+  <nav id="bottomNav" class="bottomnav hidden">
+    <button class="navbtn" data-tab="round">⛳<br>라운드</button>
+    <button class="navbtn" data-tab="ledger">💰<br>정산</button>
+    <button class="navbtn" data-tab="setup">⚙<br>설정</button>
+  </nav>
+</div>
+<div id="modalRoot"></div>
+<script src="../golf-bet-app/app-part1.js?v=13"></script>
+<script src="../golf-bet-app/app-firebase-fix.js?v=13"></script>
+<script src="../golf-bet-app/app-part2.js?v=13"></script>
+<script src="../golf-bet-app/app-room-fix.js?v=13"></script>
+<script src="../golf-bet-app/app-part3.js?v=13"></script>
+<script src="../golf-bet-app/app-part4.js?v=13"></script>
+<script src="../golf-bet-app/app-host-viewer.js?v=13"></script>
+<script src="../golf-bet-app/app-personal-view.js?v=13"></script>
+<script src="../golf-bet-app/app-reset-refresh.js?v=13"></script>
+<script src="../golf-bet-app/app-v11.js?v=13"></script>
+<script src="../golf-bet-app/app-v12.js?v=13"></script>
+</body>
+</html>
