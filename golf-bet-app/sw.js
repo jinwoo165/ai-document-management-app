@@ -1,5 +1,5 @@
-const CACHE='golf-bet-v8';
-const ASSETS=['./','./index.html','./styles.css','./readable.css','./app-part1.js','./app-firebase-fix.js','./app-part2.js','./app-room-fix.js','./app-part3.js','./app-part4.js','./app-host-viewer.js','./app-personal-view.js','./manifest.webmanifest'];
+const CACHE='golf-bet-v9';
+const ASSETS=['./','./index.html','./styles.css','./readable.css','./app-part1.js','./app-firebase-fix.js','./app-part2.js','./app-room-fix.js','./app-part3.js','./app-part4.js','./app-host-viewer.js','./app-personal-view.js','./app-reset-refresh.js','./manifest.webmanifest'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(Promise.all([
   caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))),
