@@ -1,0 +1,10 @@
+{
+  "name": "오늘 누가 쏴? - 실시간 골프 승부 장부",
+  "short_name": "오늘 누가 쏴?",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f3f5f4",
+  "theme_color": "#0b5f3b",
+  "orientation": "portrait-primary",
+  "icons": []
+}
