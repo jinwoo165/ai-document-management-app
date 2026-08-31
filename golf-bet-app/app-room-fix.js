@@ -69,7 +69,9 @@ createRoom = async function(){
 
   try{
     const {doc,setDoc}=state.fx;
-    await setDoc(doc(state.db,'rooms',room.code),room);
+    const writePromise=setDoc(doc(state.db,'rooms',room.code),room);
+    const timeoutPromise=new Promise((_,reject)=>setTimeout(()=>reject(new Error('ROOM 생성 시간이 초과되었습니다. Firestore 연결 또는 Rules 설정을 확인해 주세요.')),15000));
+    await Promise.race([writePromise,timeoutPromise]);
 
     state.room=room;
     state.myPlayerId='p1';
