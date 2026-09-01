@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Google Drive 연결 설정</title>
+<style>
+:root{--bg:#eef2f7;--card:#fff;--ink:#122033;--muted:#64748b;--line:#d9e1ec;--blue:#0f4c81;--green:#15803d;--red:#b91c1c;--amber:#b45309}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(135deg,#071529,#0f2b5b 70%,#17457f);color:#fff;padding:22px}.head{max-width:900px;margin:auto;display:flex;justify-content:space-between;gap:16px;align-items:center}.head h1{margin:0;font-size:24px}.head p{margin:6px 0 0;color:#bdd4f1;font-size:13px}.back{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.35);padding:9px 12px;border-radius:10px;font-weight:800;font-size:13px}
+main{max-width:900px;margin:24px auto;padding:0 18px 60px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 12px 35px rgba(15,43,91,.08);margin-bottom:16px}.card h2{margin:0 0 12px;font-size:19px}.notice{padding:14px;border-radius:12px;background:#f8fafc;border:1px solid var(--line);font-size:13px;line-height:1.6}.ok{background:#f0fdf4;border-color:#bbf7d0;color:#14532d}.warn{background:#fff7ed;border-color:#fed7aa;color:#7c2d12}.err{background:#fff7f7;border-color:#fecaca;color:#7f1d1d}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:12px;font-weight:800;color:#475569}.field input{border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;background:#fff}.readonly{background:#f8fafc!important;color:#475569}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}button{border:0;border-radius:10px;padding:11px 14px;background:var(--blue);color:#fff;font-weight:850;cursor:pointer}button.secondary{background:#e8eef7;color:#18324c}button.green{background:var(--green)}button.amber{background:var(--amber)}button:disabled{opacity:.55;cursor:not-allowed}.kv{display:grid;grid-template-columns:180px 1fr;gap:10px;padding:9px 0;border-bottom:1px solid #edf1f6;font-size:13px}.kv b{color:#475569}.muted{color:var(--muted);font-size:12px;line-height:1.6}.steps{margin:0;padding-left:22px;line-height:1.8;font-size:14px}.code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#0f172a;color:#e2e8f0;border-radius:10px;padding:12px;word-break:break-all;font-size:12px}@media(max-width:700px){.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.head{align-items:flex-start;flex-direction:column}.kv{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="head"><div><h1>Google Drive 연결 설정</h1><p>서비스 계정 JSON 키 없이 OAuth 방식으로 공유 드라이브 연결</p></div><a class="back" href="./">문서관리로 돌아가기</a></div></header>
+<main>
+  <div id="sessionNotice" class="notice warn">로그인 상태를 확인하는 중입니다.</div>
+
+  <section class="card">
+    <h2>1. Google Cloud에 입력할 Redirect URI</h2>
+    <p class="muted">Google Cloud의 OAuth 클라이언트 생성 화면에서 아래 주소를 <b>승인된 리디렉션 URI</b>에 정확히 등록해야 합니다.</p>
+    <div id="redirectUri" class="code">불러오는 중...</div>
+  </section>
+
+  <section class="card">
+    <h2>2. OAuth 클라이언트 정보 저장</h2>
+    <div class="grid">
+      <div class="field full"><label>OAuth 클라이언트 ID</label><input id="clientId" placeholder="...apps.googleusercontent.com"></div>
+      <div class="field full"><label>OAuth 클라이언트 보안 비밀</label><input id="clientSecret" type="password" placeholder="Google Cloud에서 발급된 보안 비밀"></div>
+    </div>
+    <div class="actions"><button id="saveBtn" onclick="saveClient()">클라이언트 정보 저장</button></div>
+    <p class="muted">입력값은 GitHub에 저장되지 않고 Supabase Vault에 암호화 보관됩니다.</p>
+  </section>
+
+  <section class="card">
+    <h2>3. Google Drive 승인 및 연결</h2>
+    <div id="statusBox" class="notice">연결 상태를 불러오는 중입니다.</div>
+    <div class="actions">
+      <button id="connectBtn" class="green" onclick="beginConnect()">Google 계정으로 연결</button>
+      <button class="secondary" onclick="testConnection()">연결 테스트</button>
+      <button id="activateBtn" class="amber" onclick="activateDrive()">Google Drive 저장 활성화</button>
+      <button class="secondary" onclick="useSupabase()">Supabase 저장으로 되돌리기</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Google Cloud에서 OAuth 클라이언트 만드는 순서</h2>
+    <ol class="steps">
+      <li><b>API 및 서비스 → OAuth 동의 화면</b>에서 앱을 내부용으로 설정합니다.</li>
+      <li><b>API 및 서비스 → 사용자 인증 정보 → 사용자 인증 정보 만들기 → OAuth 클라이언트 ID</b>를 선택합니다.</li>
+      <li>애플리케이션 유형은 <b>웹 애플리케이션</b>으로 선택합니다.</li>
+      <li>승인된 리디렉션 URI에 위 1번의 주소를 그대로 붙여 넣습니다.</li>
+      <li>생성된 클라이언트 ID와 보안 비밀을 위 2번에 입력하고 저장합니다.</li>
+      <li><b>Google 계정으로 연결</b>을 누르고 공유 드라이브를 소유한 회사 계정으로 승인합니다.</li>
+      <li>연결 테스트가 성공한 뒤에만 <b>Google Drive 저장 활성화</b>를 누릅니다.</li>
+    </ol>
+  </section>
+</main>
+<script>
+const OAUTH_API='https://mzwuwltiyzvxalqhcrzb.supabase.co/functions/v1/google-drive-oauth';
+const sessionToken=localStorage.getItem('hdcDocSession')||'';
+const $=id=>document.getElementById(id);
+async function call(action,extra={}){
+  const res=await fetch(OAUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,token:sessionToken,...extra})});
+  const data=await res.json().catch(()=>({error:'서버 응답을 해석하지 못했습니다.'}));
+  if(!res.ok)throw new Error(data.error||'요청 실패');
+  return data;
+}
+function statusText(s){
+  const map={
+    awaiting_oauth_client:'OAuth 클라이언트 정보 입력 대기',
+    oauth_client_saved:'OAuth 클라이언트 저장 완료 · Google 승인 대기',
+    connected_inactive:'Google Drive 연결 완료 · 아직 Supabase Storage 사용 중',
+    active:'Google Drive가 현재 실제 문서 저장소로 활성화됨'
+  };
+  return map[s]||s||'상태 미확인';
+}
+async function loadStatus(){
+  if(!sessionToken){$('sessionNotice').className='notice err';$('sessionNotice').innerHTML='문서관리 시스템에 먼저 시스템관리자로 로그인한 뒤 이 페이지를 열어 주세요.';return;}
+  try{
+    const j=await call('status');
+    $('sessionNotice').className='notice ok';
+    $('sessionNotice').textContent='시스템관리자 로그인 확인 완료';
+    $('redirectUri').textContent=j.redirect_uri;
+    const s=j.setting||{};
+    $('statusBox').className='notice '+(s.connection_status==='active'?'ok':s.connection_status==='connected_inactive'?'ok':'warn');
+    $('statusBox').innerHTML=`<div class="kv"><b>현재 저장소</b><div>${s.active_provider==='google_drive'?'Google Shared Drive':'Supabase Storage'}</div></div><div class="kv"><b>연결 상태</b><div>${statusText(s.connection_status)}</div></div><div class="kv"><b>공유 드라이브</b><div>${s.shared_drive_name||'-'}</div></div><div class="kv"><b>승인 Google 계정</b><div>${s.connected_google_account||'-'}</div></div><div class="kv"><b>OAuth 클라이언트</b><div>${j.client_configured?'저장 완료':'미등록'}</div></div><div class="kv"><b>갱신 토큰</b><div>${j.refresh_token_configured?'발급 완료':'미발급'}</div></div>`;
+  }catch(e){
+    $('sessionNotice').className='notice err';$('sessionNotice').textContent=e.message;
+    $('statusBox').className='notice err';$('statusBox').textContent=e.message;
+  }
+}
+async function saveClient(){
+  const id=$('clientId').value.trim(),secret=$('clientSecret').value.trim();
+  if(!id||!secret)return alert('클라이언트 ID와 보안 비밀을 모두 입력하세요.');
+  const b=$('saveBtn');b.disabled=true;b.textContent='저장 중...';
+  try{await call('saveClient',{client_id:id,client_secret:secret});$('clientSecret').value='';alert('OAuth 클라이언트 정보를 안전하게 저장했습니다.');await loadStatus();}
+  catch(e){alert('저장 실패: '+e.message)}finally{b.disabled=false;b.textContent='클라이언트 정보 저장'}
+}
+async function beginConnect(){
+  const b=$('connectBtn');b.disabled=true;
+  try{const j=await call('begin');location.href=j.auth_url;}
+  catch(e){alert('연결 시작 실패: '+e.message);b.disabled=false;}
+}
+async function testConnection(){
+  try{const j=await call('test');alert(`연결 성공\n공유 드라이브: ${j.drive.name}\n루트 항목: ${(j.files||[]).length}개`);await loadStatus();}
+  catch(e){alert('연결 테스트 실패: '+e.message)}
+}
+async function activateDrive(){
+  if(!confirm('이후 새로 등록하는 문서의 실제 파일을 Google Shared Drive에 저장합니다. 계속할까요?'))return;
+  const b=$('activateBtn');b.disabled=true;
+  try{const j=await call('activate');alert(`Google Drive 저장을 활성화했습니다.\n${j.drive.name}`);await loadStatus();}
+  catch(e){alert('활성화 실패: '+e.message)}finally{b.disabled=false;}
+}
+async function useSupabase(){
+  if(!confirm('새 문서 저장 위치를 다시 Supabase Storage로 바꿀까요?'))return;
+  try{await call('useSupabase');alert('Supabase Storage로 되돌렸습니다.');await loadStatus();}
+  catch(e){alert(e.message)}
+}
+loadStatus();
+</script>
+</body>
+</html>
