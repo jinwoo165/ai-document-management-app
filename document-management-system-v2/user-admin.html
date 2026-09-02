@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HDC 현장 문서관리 · 직원 관리</title>
+<style>
+:root{--bg:#eef2f7;--card:#fff;--ink:#122033;--muted:#64748b;--line:#d9e1ec;--blue:#0f4c81;--blue2:#2563eb;--green:#15803d;--red:#b91c1c;--amber:#b45309;--soft:#f8fafc;--shadow:0 12px 34px rgba(15,43,91,.08);--radius:18px}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#071529,#0f2b5b 70%,#17457f);color:#fff;box-shadow:0 4px 20px rgba(0,0,0,.16)}
+.top{max-width:1320px;margin:auto;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:16px}.brand h1{font-size:23px;margin:0}.brand p{margin:5px 0 0;color:#bdd4f1;font-size:13px}.top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.chip{font-size:12px;padding:7px 11px;border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.1);border-radius:999px;color:#e4efff}.top a{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.28);padding:8px 11px;border-radius:10px;font-size:12px;font-weight:800}
+main{max-width:1320px;margin:22px auto 70px;padding:0 20px}.notice{border:1px solid #c7d7ef;background:#f5f9ff;border-radius:14px;padding:14px;color:#214160;font-size:13px;line-height:1.6}.notice.ok{border-color:#bbf7d0;background:#f0fdf4;color:#14532d}.notice.warn{border-color:#fed7aa;background:#fff7ed;color:#7c2d12}.notice.err{border-color:#fecaca;background:#fff7f7;color:#7f1d1d}.hidden{display:none!important}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin:16px 0}.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:17px;box-shadow:var(--shadow)}.stat .label{font-size:12px;color:var(--muted);font-weight:800}.stat .num{font-size:30px;font-weight:900;margin-top:7px}.stat .sub{font-size:11px;color:var(--muted);margin-top:4px}
+.grid2{display:grid;grid-template-columns:.8fr 1.2fr;gap:16px;margin-bottom:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}.card-h{padding:15px 17px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}.card-h h2{margin:0;font-size:17px}.card-b{padding:17px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:#475569;font-weight:800}.field input,.field select{border:1px solid var(--line);border-radius:10px;padding:10px 11px;background:#fff;font:inherit}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.toolbar input,.toolbar select{border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff;font:inherit}
+button{border:0;border-radius:10px;background:var(--blue);color:#fff;padding:10px 13px;font-size:13px;font-weight:850;cursor:pointer}button.secondary{background:#e8eef7;color:#18324c}button.gray{background:#f1f5f9;color:#334155}button.green{background:var(--green)}button.red{background:var(--red)}button.amber{background:var(--amber)}button.small{padding:6px 9px;font-size:11px;border-radius:8px}button:disabled{opacity:.55;cursor:not-allowed}
+.drop{border:2px dashed #9eb5d4;border-radius:15px;background:#f8fbff;padding:22px;text-align:center;cursor:pointer;transition:.15s}.drop.drag{background:#eaf3ff;border-color:var(--blue2)}.drop strong{display:block;font-size:15px}.drop p{margin:6px 0 0;font-size:12px;color:var(--muted)}.file-name{font-size:12px;font-weight:800;color:var(--blue);margin-top:8px}.hint{font-size:12px;color:var(--muted);line-height:1.6}.preview{margin-top:12px;border:1px solid var(--line);border-radius:12px;overflow:auto;max-height:260px}.table{width:100%;border-collapse:collapse;font-size:12px}.table th,.table td{padding:9px 10px;border-bottom:1px solid #edf1f6;text-align:left;vertical-align:middle;white-space:nowrap}.table th{position:sticky;top:0;background:#f8fafc;color:#475569;font-size:11px;z-index:1}.table tr:hover td{background:#f8fbff}.user-table-wrap{overflow:auto;max-height:600px}.badge{display:inline-block;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:850}.b-user{background:#eef2ff;color:#3730a3}.b-doc{background:#e0f2fe;color:#075985}.b-system{background:#fef3c7;color:#92400e}.b-active{background:#dcfce7;color:#166534}.b-inactive{background:#fee2e2;color:#991b1b}.b-change{background:#fff7ed;color:#c2410c}.b-done{background:#ecfdf5;color:#166534}.row-actions{display:flex;gap:5px;flex-wrap:wrap}.summary-line{margin-top:12px;font-size:13px;font-weight:800}.result-list{margin-top:10px;font-size:12px;line-height:1.6;max-height:160px;overflow:auto}.result-list .bad{color:var(--red)}
+dialog{border:0;border-radius:18px;box-shadow:0 30px 90px rgba(0,0,0,.28);width:min(620px,calc(100% - 32px));padding:0}dialog::backdrop{background:rgba(8,15,31,.58)}.modal-h{padding:17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.modal-b{padding:17px}.modal-h h3{margin:0;font-size:17px}.history{max-height:360px;overflow:auto}.history-item{padding:11px 0;border-bottom:1px solid #edf1f6;font-size:12px}.history-item b{display:block;margin-bottom:4px}.history-meta{color:var(--muted);font-size:11px}
+@media(max-width:900px){.stats,.grid2,.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.top{align-items:flex-start;flex-direction:column}.stat .num{font-size:26px}}
+</style>
+</head>
+<body>
+<header><div class="top"><div class="brand"><h1>직원·권한 관리</h1><p>천안IPC 현장 문서관리 · 40명 일괄 등록 및 계정 운영</p></div><div class="top-actions"><span id="actorChip" class="chip">로그인 확인 중</span><a href="./">문서관리 홈</a><a href="./drive-setup.html">Google Drive 설정</a></div></div></header>
+<main>
+  <div id="accessNotice" class="notice warn">관리자 로그인 상태를 확인하는 중입니다.</div>
+
+  <section id="appBody" class="hidden">
+    <div class="stats">
+      <div class="stat"><div class="label">전체 계정</div><div class="num" id="statAll">0</div><div class="sub">등록된 직원 전체</div></div>
+      <div class="stat"><div class="label">사용 중</div><div class="num" id="statActive">0</div><div class="sub">현재 로그인 가능한 계정</div></div>
+      <div class="stat"><div class="label">비밀번호 변경 대기</div><div class="num" id="statChange">0</div><div class="sub">초기 비밀번호 사용 계정</div></div>
+      <div class="stat"><div class="label">관리자</div><div class="num" id="statAdmins">0</div><div class="sub">문서관리자 + 시스템관리자</div></div>
+    </div>
+
+    <div class="grid2">
+      <section class="card">
+        <div class="card-h"><h2>직원 1명 등록</h2></div>
+        <div class="card-b">
+          <div class="form-grid">
+            <div class="field"><label>사번</label><input id="singleEmp" autocomplete="off"></div>
+            <div class="field"><label>성명</label><input id="singleName" autocomplete="off"></div>
+            <div class="field"><label>부서·직종</label><input id="singleDept" placeholder="예: 건축, 공무, 안전"></div>
+            <div class="field"><label>권한</label><select id="singleRole"><option value="user">일반사용자</option><option value="doc_admin">문서관리자</option><option value="system_admin">시스템관리자</option></select></div>
+          </div>
+          <div class="toolbar" style="margin-top:14px"><button id="singleBtn" onclick="createSingle()">직원 생성</button></div>
+          <div class="notice" style="margin-top:12px">초기 아이디와 비밀번호는 모두 <b>사번</b>입니다. 최초 로그인 후 비밀번호를 변경하는 방식입니다.</div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><h2>직원 일괄 등록</h2><button class="small secondary" onclick="downloadTemplate()">CSV 양식 받기</button></div>
+        <div class="card-b">
+          <div id="csvDrop" class="drop">
+            <strong>직원 CSV 파일을 여기에 끌어다 놓으세요</strong>
+            <p>열 순서: 사번, 성명, 부서, 권한, 상태 · 최대 100명</p>
+            <input id="csvFile" type="file" accept=".csv,text/csv" class="hidden">
+            <div id="csvFileName" class="file-name"></div>
+          </div>
+          <p class="hint"><b>신규 계정</b>은 초기 비밀번호를 사번으로 생성합니다. <b>기존 계정</b>은 성명·부서·권한·상태만 갱신하고 현재 비밀번호는 유지합니다.</p>
+          <div id="csvPreview" class="preview hidden"></div>
+          <div id="bulkSummary" class="summary-line"></div>
+          <div id="bulkResults" class="result-list"></div>
+          <div class="toolbar" style="margin-top:12px"><button id="bulkBtn" class="green" onclick="runBulkImport()" disabled>미리보기 직원 등록</button><button class="gray" onclick="clearBulk()">초기화</button></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="card">
+      <div class="card-h"><h2>사용자 목록</h2><div class="toolbar"><button class="small secondary" onclick="loadUsers()">새로고침</button><button class="small gray" onclick="exportUsers()">CSV 내보내기</button></div></div>
+      <div class="card-b">
+        <div class="toolbar">
+          <input id="userSearch" placeholder="사번, 성명, 부서 검색" oninput="renderUsers()">
+          <select id="roleFilter" onchange="renderUsers()"><option value="all">권한 전체</option><option value="user">일반사용자</option><option value="doc_admin">문서관리자</option><option value="system_admin">시스템관리자</option></select>
+          <select id="activeFilter" onchange="renderUsers()"><option value="all">상태 전체</option><option value="active">사용 중</option><option value="inactive">중지</option><option value="change">비밀번호 변경 대기</option></select>
+        </div>
+        <div class="user-table-wrap" style="margin-top:12px"><table class="table"><thead><tr><th>사번</th><th>성명</th><th>부서</th><th>권한</th><th>상태</th><th>초기 비밀번호</th><th>최근 로그인</th><th>관리</th></tr></thead><tbody id="userRows"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div class="card-h"><h2>계정 관리 이력</h2><button class="small secondary" onclick="loadHistory()">최근 이력 불러오기</button></div>
+      <div class="card-b"><div id="historyList" class="history"><div class="hint">이력 불러오기를 누르면 직원 생성·수정·중지·비밀번호 초기화 기록을 확인할 수 있습니다.</div></div></div>
+    </section>
+  </section>
+</main>
+
+<dialog id="editDialog">
+  <div class="modal-h"><h3>직원 정보 수정</h3><button class="small gray" onclick="editDialog.close()">닫기</button></div>
+  <div class="modal-b">
+    <div class="form-grid">
+      <div class="field"><label>사번</label><input id="editEmp" readonly></div>
+      <div class="field"><label>성명</label><input id="editName"></div>
+      <div class="field"><label>부서·직종</label><input id="editDept"></div>
+      <div class="field"><label>권한</label><select id="editRole"><option value="user">일반사용자</option><option value="doc_admin">문서관리자</option><option value="system_admin">시스템관리자</option></select></div>
+      <div class="field full"><label>사용 상태</label><select id="editActive"><option value="true">사용</option><option value="false">중지</option></select></div>
+    </div>
+    <div class="toolbar" style="margin-top:15px"><button onclick="saveEdit()">수정 저장</button></div>
+  </div>
+</dialog>
+
+<script>
+const API='https://mzwuwltiyzvxalqhcrzb.supabase.co/functions/v1/user-admin-api';
+const sessionToken=localStorage.getItem('hdcDocSession')||'';
+let actor=null,users=[],bulkRows=[];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+
+async function call(action,extra={}){
+  const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,token:sessionToken,...extra})});
+  const data=await res.json().catch(()=>({error:'서버 응답을 해석하지 못했습니다.'}));
+  if(!res.ok)throw new Error(data.error||'요청 실패');
+  return data;
+}
+
+function roleLabel(role){return role==='system_admin'?'시스템관리자':role==='doc_admin'?'문서관리자':'일반사용자'}
+function roleBadge(role){return `<span class="badge ${role==='system_admin'?'b-system':role==='doc_admin'?'b-doc':'b-user'}">${roleLabel(role)}</span>`}
+function dateTime(v){if(!v)return '-';const d=new Date(v);return Number.isNaN(d.getTime())?'-':d.toLocaleString('ko-KR',{year:'2-digit',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}
+function csvCell(v){const s=String(v??'');return /[",\n\r]/.test(s)?`"${s.replaceAll('"','""')}"`:s}
+
+async function init(){
+  if(!sessionToken){$('accessNotice').className='notice err';$('accessNotice').innerHTML='문서관리 시스템에 관리자 계정으로 먼저 로그인해 주세요. <a href="./">문서관리 홈으로 이동</a>';return;}
+  try{await loadUsers();$('accessNotice').className='notice ok';$('accessNotice').textContent='관리자 로그인 확인 완료 · 직원 계정과 권한을 관리할 수 있습니다.';$('appBody').classList.remove('hidden');}
+  catch(e){$('accessNotice').className='notice err';$('accessNotice').innerHTML=`${esc(e.message)} · <a href="./">문서관리 홈에서 다시 로그인</a>`;}
+}
+
+async function loadUsers(){
+  const j=await call('listUsers');actor=j.actor;users=j.users||[];
+  $('actorChip').textContent=`${actor.name} · ${actor.employee_no} · ${roleLabel(actor.role)}`;
+  if(actor.role!=='system_admin'){
+    [...document.querySelectorAll('#singleRole option[value="system_admin"],#editRole option[value="system_admin"]')].forEach(o=>o.disabled=true);
+  }
+  renderStats();renderUsers();
+}
+
+function renderStats(){
+  $('statAll').textContent=users.length;
+  $('statActive').textContent=users.filter(u=>u.active).length;
+  $('statChange').textContent=users.filter(u=>u.must_change_password).length;
+  $('statAdmins').textContent=users.filter(u=>['doc_admin','system_admin'].includes(u.role)).length;
+}
+
+function filteredUsers(){
+  const q=$('userSearch').value.trim().toLowerCase();
+  const role=$('roleFilter').value,active=$('activeFilter').value;
+  return users.filter(u=>{
+    const hay=[u.employee_no,u.name,u.department].join(' ').toLowerCase();
+    const qOk=!q||hay.includes(q);
+    const roleOk=role==='all'||u.role===role;
+    const activeOk=active==='all'||(active==='active'&&u.active)||(active==='inactive'&&!u.active)||(active==='change'&&u.must_change_password);
+    return qOk&&roleOk&&activeOk;
+  });
+}
+
+function renderUsers(){
+  const arr=filteredUsers();
+  $('userRows').innerHTML=arr.map(u=>{
+    const self=actor&&u.employee_no===actor.employee_no;
+    const manageSystem=actor?.role==='system_admin'||u.role!=='system_admin';
+    const status=u.active?'<span class="badge b-active">사용</span>':'<span class="badge b-inactive">중지</span>';
+    const pw=u.must_change_password?'<span class="badge b-change">변경 대기</span>':'<span class="badge b-done">변경 완료</span>';
+    return `<tr><td><b>${esc(u.employee_no)}</b>${self?' <span class="badge">본인</span>':''}</td><td>${esc(u.name)}</td><td>${esc(u.department||'-')}</td><td>${roleBadge(u.role)}</td><td>${status}</td><td>${pw}</td><td>${dateTime(u.last_login_at)}</td><td><div class="row-actions"><button class="small gray" onclick="openEdit('${u.employee_no}')" ${manageSystem?'':'disabled'}>수정</button><button class="small secondary" onclick="resetPassword('${u.employee_no}')" ${(self||!manageSystem)?'disabled':''}>비번 초기화</button><button class="small ${u.active?'red':'green'}" onclick="quickToggle('${u.employee_no}')" ${(self||!manageSystem)?'disabled':''}>${u.active?'중지':'재사용'}</button></div></td></tr>`;
+  }).join('')||'<tr><td colspan="8" class="hint">조건에 맞는 직원이 없습니다.</td></tr>';
+}
+
+async function createSingle(){
+  const employee_no=$('singleEmp').value.trim(),name=$('singleName').value.trim(),department=$('singleDept').value.trim(),role=$('singleRole').value;
+  if(!employee_no||!name)return alert('사번과 성명을 입력하세요.');
+  const b=$('singleBtn');b.disabled=true;b.textContent='생성 중...';
+  try{await call('createUser',{user:{employee_no,name,department,role,active:true}});alert(`직원을 생성했습니다.\n아이디: ${employee_no}\n초기 비밀번호: ${employee_no}`);$('singleEmp').value=$('singleName').value=$('singleDept').value='';$('singleRole').value='user';await loadUsers();}
+  catch(e){alert('직원 생성 실패: '+e.message)}finally{b.disabled=false;b.textContent='직원 생성'}
+}
+
+function downloadTemplate(){
+  const rows=[['사번','성명','부서','권한','상태'],['10001','홍길동','건축','일반사용자','사용'],['10002','김영희','공무','문서관리자','사용']];
+  downloadCsv('천안IPC_직원등록_양식.csv',rows);
+}
+
+function downloadCsv(name,rows){
+  const text='\ufeff'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},0);
+}
+
+function parseCsv(text){
+  text=text.replace(/^\ufeff/,'');const rows=[];let row=[],cell='',quoted=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(quoted){if(ch==='"'&&text[i+1]==='"'){cell+='"';i++;}else if(ch==='"'){quoted=false;}else cell+=ch;}
+    else if(ch==='"'){quoted=true;}
+    else if(ch===','){row.push(cell);cell='';}
+    else if(ch==='\n'){row.push(cell.replace(/\r$/,''));rows.push(row);row=[];cell='';}
+    else cell+=ch;
+  }
+  if(cell.length||row.length){row.push(cell.replace(/\r$/,''));rows.push(row)}
+  return rows.filter(r=>r.some(v=>String(v).trim()!==''));
+}
+
+function headerKey(v){
+  const k=String(v||'').trim().toLowerCase().replace(/[ _-]/g,'');
+  if(['사번','employeeno','employeeid','id'].includes(k))return'employee_no';
+  if(['성명','이름','name'].includes(k))return'name';
+  if(['부서','소속','직종','department','dept'].includes(k))return'department';
+  if(['권한','역할','role'].includes(k))return'role';
+  if(['상태','사용여부','active','status'].includes(k))return'active';
+  return'';
+}
+
+function roleValue(v){const s=String(v||'').trim();return ['시스템관리자','최고관리자'].includes(s)?'system_admin':['문서관리자','관리자'].includes(s)?'doc_admin':['user','doc_admin','system_admin'].includes(s)?s:'user'}
+function activeValue(v){const s=String(v??'사용').trim().toLowerCase();return !['false','0','중지','비활성','inactive','no','n'].includes(s)}
+
+async function loadCsvFile(file){
+  if(!file)return;clearBulk(false);$('csvFileName').textContent=file.name;
+  try{
+    const matrix=parseCsv(await file.text());if(matrix.length<2)throw new Error('헤더와 직원 데이터가 필요합니다.');
+    const keys=matrix[0].map(headerKey);const empIdx=keys.indexOf('employee_no'),nameIdx=keys.indexOf('name');
+    if(empIdx<0||nameIdx<0)throw new Error('CSV 첫 행에 사번과 성명 열이 있어야 합니다.');
+    bulkRows=matrix.slice(1).map((r,i)=>({row:i+2,employee_no:String(r[empIdx]||'').trim(),name:String(r[nameIdx]||'').trim(),department:String(r[keys.indexOf('department')]||'').trim(),role:roleValue(r[keys.indexOf('role')]),active:activeValue(r[keys.indexOf('active')])})).filter(r=>r.employee_no||r.name);
+    if(!bulkRows.length)throw new Error('등록할 직원 데이터가 없습니다.');
+    if(bulkRows.length>100)throw new Error('한 번에 최대 100명까지 등록할 수 있습니다.');
+    renderBulkPreview();$('bulkBtn').disabled=false;$('bulkBtn').textContent=`${bulkRows.length}명 등록·갱신`;
+  }catch(e){bulkRows=[];$('bulkBtn').disabled=true;$('csvPreview').classList.add('hidden');$('bulkSummary').textContent='';alert('CSV 확인 실패: '+e.message)}
+}
+
+function renderBulkPreview(){
+  const seen=new Set(),dups=new Set();bulkRows.forEach(r=>{if(seen.has(r.employee_no))dups.add(r.employee_no);seen.add(r.employee_no)});
+  $('csvPreview').classList.remove('hidden');
+  $('csvPreview').innerHTML=`<table class="table"><thead><tr><th>행</th><th>사번</th><th>성명</th><th>부서</th><th>권한</th><th>상태</th></tr></thead><tbody>${bulkRows.map(r=>`<tr><td>${r.row}</td><td>${esc(r.employee_no)}${dups.has(r.employee_no)?' <span class="badge b-inactive">중복</span>':''}</td><td>${esc(r.name)}</td><td>${esc(r.department||'-')}</td><td>${roleLabel(r.role)}</td><td>${r.active?'사용':'중지'}</td></tr>`).join('')}</tbody></table>`;
+  $('bulkSummary').textContent=`미리보기 ${bulkRows.length}명${dups.size?` · 중복 사번 ${dups.size}건 확인 필요`:''}`;
+}
+
+async function runBulkImport(){
+  if(!bulkRows.length)return alert('CSV를 먼저 선택하세요.');
+  if(!confirm(`${bulkRows.length}명의 계정을 등록 또는 갱신합니다. 계속할까요?`))return;
+  const b=$('bulkBtn');b.disabled=true;b.textContent='처리 중...';$('bulkResults').innerHTML='';
+  try{
+    const j=await call('bulkImport',{users:bulkRows.map(({row,...u})=>u)});const s=j.summary;
+    $('bulkSummary').textContent=`요청 ${s.requested}명 · 신규 ${s.created}명 · 갱신 ${s.updated}명 · 변경 없음 ${s.unchanged}명 · 실패 ${s.failed}명`;
+    $('bulkResults').innerHTML=(j.results||[]).filter(r=>r.status==='failed').map(r=>`<div class="bad">${r.row}행 · ${esc(r.employee_no||'-')} · ${esc(r.error)}</div>`).join('')||(s.failed?'실패 세부내역이 없습니다.':'모든 행을 정상 처리했습니다.');
+    await loadUsers();
+  }catch(e){alert('일괄 등록 실패: '+e.message)}finally{b.disabled=false;b.textContent=`${bulkRows.length}명 등록·갱신`}
+}
+
+function clearBulk(clearName=true){bulkRows=[];$('csvFile').value='';if(clearName)$('csvFileName').textContent='';$('csvPreview').classList.add('hidden');$('csvPreview').innerHTML='';$('bulkSummary').textContent='';$('bulkResults').innerHTML='';$('bulkBtn').disabled=true;$('bulkBtn').textContent='미리보기 직원 등록'}
+
+function openEdit(employeeNo){
+  const u=users.find(x=>x.employee_no===employeeNo);if(!u)return;
+  $('editEmp').value=u.employee_no;$('editName').value=u.name;$('editDept').value=u.department||'';$('editRole').value=u.role;$('editActive').value=String(u.active);editDialog.showModal();
+}
+
+async function saveEdit(){
+  const employee_no=$('editEmp').value,name=$('editName').value.trim(),department=$('editDept').value.trim(),role=$('editRole').value,active=$('editActive').value==='true';
+  if(!name)return alert('성명을 입력하세요.');
+  try{await call('updateUser',{employee_no,name,department,role,active});editDialog.close();alert('직원 정보를 수정했습니다.');await loadUsers();}
+  catch(e){alert('수정 실패: '+e.message)}
+}
+
+async function quickToggle(employeeNo){
+  const u=users.find(x=>x.employee_no===employeeNo);if(!u)return;
+  const next=!u.active;if(!confirm(`${u.name}(${u.employee_no}) 계정을 ${next?'다시 사용':'중지'} 처리할까요?${next?'':'\n중지하면 현재 로그인 세션도 종료됩니다.'}`))return;
+  try{await call('updateUser',{employee_no:u.employee_no,name:u.name,department:u.department||'',role:u.role,active:next});await loadUsers();}
+  catch(e){alert('상태 변경 실패: '+e.message)}
+}
+
+async function resetPassword(employeeNo){
+  const u=users.find(x=>x.employee_no===employeeNo);if(!u)return;
+  if(!confirm(`${u.name}(${u.employee_no})의 비밀번호를 사번으로 초기화할까요?\n현재 로그인 세션은 종료되고 최초 로그인 후 변경 대상이 됩니다.`))return;
+  try{await call('resetPassword',{employee_no:u.employee_no});alert(`비밀번호를 초기화했습니다.\n아이디: ${u.employee_no}\n초기 비밀번호: ${u.employee_no}`);await loadUsers();}
+  catch(e){alert('비밀번호 초기화 실패: '+e.message)}
+}
+
+function exportUsers(){
+  const rows=[['사번','성명','부서','권한','상태','비밀번호 변경 여부','최근 로그인']];
+  users.forEach(u=>rows.push([u.employee_no,u.name,u.department||'',roleLabel(u.role),u.active?'사용':'중지',u.must_change_password?'변경 대기':'변경 완료',dateTime(u.last_login_at)]));
+  downloadCsv('천안IPC_직원계정_현황.csv',rows);
+}
+
+async function loadHistory(){
+  try{const j=await call('listHistory',{limit:150});const arr=j.history||[];$('historyList').innerHTML=arr.map(h=>{const title={CREATE_USER:'직원 생성',BULK_CREATE_USER:'일괄 신규 생성',BULK_UPDATE_USER:'일괄 정보 갱신',BULK_IMPORT_COMPLETE:'일괄 등록 완료',UPDATE_USER:'직원 정보 수정',RESET_PASSWORD:'비밀번호 초기화'}[h.action]||h.action;return `<div class="history-item"><b>${esc(title)}${h.target_employee_no?` · ${esc(h.target_employee_no)}`:''}</b><div class="history-meta">처리자 ${esc(h.actor_employee_no)} · ${dateTime(h.created_at)}</div></div>`}).join('')||'<div class="hint">관리 이력이 없습니다.</div>';}
+  catch(e){$('historyList').innerHTML=`<div class="notice err">${esc(e.message)}</div>`}
+}
+
+function setupDrop(){
+  const drop=$('csvDrop'),input=$('csvFile');drop.onclick=()=>input.click();input.onchange=e=>loadCsvFile(e.target.files[0]);
+  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag')}));
+  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag')}));
+  drop.addEventListener('drop',e=>loadCsvFile(e.dataTransfer.files[0]));
+}
+
+setupDrop();init();
+</script>
+</body>
+</html>
