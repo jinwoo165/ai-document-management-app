@@ -1,0 +1,39 @@
+name: Patch network guard into document app
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-network-guard.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inject network guard loader
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('document-management-system-v2/index.html')
+          s = p.read_text(encoding='utf-8')
+          marker = '<script src="./network-guard.js?v=20260904-1"></script>'
+          if marker not in s:
+              s = s.replace('</body>', marker + '\n</body>')
+              p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit patch
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes needed"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add document-management-system-v2/index.html
+          git commit -m "Load resilient network guard"
+          git push
