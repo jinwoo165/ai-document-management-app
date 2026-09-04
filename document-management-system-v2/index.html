@@ -225,5 +225,6 @@ function openEdit(id,mode){const d=docs.find(x=>x.id===id);if(!d)return;if(detai
 async function saveEdit(){const id=$('editId').value,mode=$('editMode').value,d=docs.find(x=>x.id===id);if(!d)return;const data={title:$('editTitle').value.trim(),document_date:$('editDate').value,work_category:$('editCategory').value,sender:$('editSender').value,receiver:$('editReceiver').value,manager:$('editManager').value,importance:$('editImportance').value,memo:$('editMemo').value};try{if(mode==='resubmit'){const f=new FormData();f.append('action','resubmitDocument');f.append('token',sessionToken);f.append('document_id',id);Object.entries(data).forEach(([k,v])=>f.append(k,v));f.append('approver_employee_no',$('editApprover').value);const file=$('editFile').files[0];if(file)f.append('file',file);await api(f,true)}else await api({action:'updateMetadata',token:sessionToken,document_id:id,...data});editDialog.close();detailDialog.close();await loadAll();toast(mode==='resubmit'?'재상신했습니다.':'문서정보를 수정했습니다.')}catch(e){toast(e.message,'error')}}
 setupNav();setupDrop('inDrop','inFile','IN');setupDrop('outDrop','outFile','OUT');$('inDate').value=$('outDate').value=today();checkSystem();restore();
 </script>
+<script src="./network-guard.js?v=20260904-1"></script>
 </body>
 </html>
